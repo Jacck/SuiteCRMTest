@@ -23,11 +23,13 @@ jobs:
         run: |
           vendor/bin/phpmetrics --report-html=metrics-report ./modules
           
-      - name: Check Coupling Thresholds
+      - name: Check Coupling Metrics
         run: |
-          vendor/bin/pdepend --summary-xml=pdepend.xml \
-            --coupling-analyzer \
-            --hidehalstead \
+          vendor/bin/pdepend \
+            --summary-xml=pdepend.xml \
+            --overview-pyramid=pyramid.svg \
+            --jdepend-chart=jdepend.svg \
+            --jdepend-xml=jdepend.xml \
             --ignore=tests,vendor \
             ./
           php scripts/check-metrics.php pdepend.xml
@@ -39,3 +41,6 @@ jobs:
           path: |
             metrics-report/
             pdepend.xml
+            pyramid.svg
+            jdepend.svg
+            jdepend.xml
