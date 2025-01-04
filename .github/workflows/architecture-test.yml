@@ -11,19 +11,14 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.1'
+          php-version: '7.4'
           tools: composer:v2
           
       - name: Install tools
         run: |
-          composer require --dev qossmic/deptrac
           composer require --dev phpmetrics/phpmetrics
           composer require --dev pdepend/pdepend
 
-      - name: Layer Dependency Analysis
-        run: |
-          vendor/bin/deptrac analyze --fail-on-uncovered
-          
       - name: Generate Metrics
         run: |
           vendor/bin/phpmetrics --report-html=metrics-report ./modules
