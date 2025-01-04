@@ -1,0 +1,46 @@
+name: Architecture Tests
+on: [push, pull_request]
+
+jobs:
+  architecture-analysis:
+    name: Architecture Analysis
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.1'
+          tools: composer:v2
+          
+      - name: Install tools
+        run: |
+          composer require --dev qossmic/deptrac
+          composer require --dev phpmetrics/phpmetrics
+          composer require --dev pdepend/pdepend
+
+      - name: Layer Dependency Analysis
+        run: |
+          vendor/bin/deptrac analyze --fail-on-uncovered
+          
+      - name: Generate Metrics
+        run: |
+          vendor/bin/phpmetrics --report-html=metrics-report ./modules
+          
+      - name: Check Coupling Thresholds
+        run: |
+          vendor/bin/pdepend --summary-xml=pdepend.xml \
+            --coupling-analyzer \
+            --hidehalstead \
+            --ignore=tests,vendor \
+            ./
+          php scripts/check-metrics.php pdepend.xml
+
+      - name: Upload Analysis Reports
+        uses: actions/upload-artifact@v2
+        with:
+          name: architecture-analysis
+          path: |
+            metrics-report/
+            pdepend.xml
