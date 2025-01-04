@@ -1,0 +1,27 @@
+paths:
+  - ./modules
+  - ./include
+  - ./custom
+
+layers:
+  - name: Controller
+    collectors:
+      - type: directory
+        regex: /controllers/.*Controller\.php$/
+  - name: Model
+    collectors:
+      - type: directory
+        regex: /models/.*\.php$/
+  - name: View
+    collectors:
+      - type: directory
+        regex: /views/.*\.php$/
+
+ruleset:
+  Controller:
+    - Model
+    - View
+  Model:
+    - none
+  View:
+    - Model
